@@ -252,6 +252,24 @@ class User implements AdvancedUserInterface, \Serializable
     {
         return $this->name;
     }
+    
+     /**
+     * @param string $email
+     * @param int $size
+     */
+    public function setImageUrl($email, $size = 80)
+    {
+        // See https://en.gravatar.com/site/implement/images/ for available options.
+        $this->imageUrl =  '//www.gravatar.com/avatar/' . md5(strtolower(trim($email))) . '?s=' . $size . '&d=identicon';
+    }
+    
+    /**
+     * @return string
+     */
+    public function getImageUrl()
+    {
+        return $this->imageUrl;
+    }
 
     /**
      * Returns the name, if set, or else "Anonymous {id}".
