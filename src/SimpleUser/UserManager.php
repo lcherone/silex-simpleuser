@@ -153,6 +153,7 @@ class UserManager implements UserProviderInterface
         $user->setEnabled($data['isEnabled']);
         $user->setConfirmationToken($data['confirmationToken']);
         $user->setTimePasswordResetRequested($data['timePasswordResetRequested']);
+        $user->setImageUrl($data['email']);
 
         if (!empty($data['customFields'])) {
             $user->setCustomFields($data['customFields']);
