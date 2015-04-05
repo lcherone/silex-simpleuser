@@ -469,7 +469,7 @@ class UserController
             'layout_template' => $this->getTemplate('layout'),
             'error' => implode("\n", $errors),
             'user' => $user,
-            'available_roles' => array('ROLE_USER', 'ROLE_ADMIN'),
+            'available_roles' => array('ROLE_USER', 'ROLE_ADMIN', 'ROLE_ALLOWED_TO_SWITCH'),
             'image_url' => $this->getGravatarUrl($user->getEmail()),
             'customFields' => $customFields,
             'isUsernameRequired' => $this->isUsernameRequired,
@@ -491,7 +491,7 @@ class UserController
     {
         $order_by = $request->get('order_by') ?: 'name';
         $order_dir = $request->get('order_dir') == 'DESC' ? 'DESC' : 'ASC';
-        $limit = (int)($request->get('limit') ?: 50);
+        $limit = (int)($request->get('limit') ?: 10);
         $page = (int)($request->get('page') ?: 1);
         $offset = ($page - 1) * $limit;
 

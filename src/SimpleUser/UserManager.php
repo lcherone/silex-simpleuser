@@ -10,6 +10,7 @@ use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Connection;
 use Silex\Application;
 
@@ -53,6 +54,38 @@ class UserManager implements UserProviderInterface
         $this->conn = $conn;
         $this->app = $app;
         $this->dispatcher = $app['dispatcher'];
+
+        $schema = $app['db']->getSchemaManager();
+        if (!$schema->tablesExist('users')) {
+            $users = new Table('users');
+            $users->addColumn('id', 'integer', array('unsigned' => true, 'autoincrement' => true));
+            $users->setPrimaryKey(array('id'));
+            $users->addColumn('email', 'string', array('length' => 100));
+            $users->addUniqueIndex(array('email'));
+            $users->addColumn('password', 'string', array('length' => 255));
+            $users->addColumn('salt', 'string', array('length' => 255));
+            $users->addColumn('roles', 'string', array('length' => 255));
+            $users->addColumn('name', 'string', array('length' => 100));
+            $users->addColumn('time_created', 'integer', array('unsigned' => true, 'default' => 0));
+            $users->addColumn('username', 'string', array('length' => 100));
+            $users->addUniqueIndex(array('username'));
+            $users->addColumn('isEnabled', 'integer', array('default' => 1));
+            $users->addColumn('confirmationToken', 'string', array('length' => 100, 'default' => null));
+            $users->addColumn('timePasswordResetRequested', 'integer', array('unsigned' => true, 'default' => 0));
+            $schema->createTable($users);
+
+            $app['db']->insert('users', array(
+              'email' => 'admin@example.com',
+              'password' => 'y65gFQPRyFliD7BUeQl1IPMaF/3lrg+4VnA8QWnEqSOMJR76oX0ynl6lVxI5C6qv8r/D2U1DuEn4d2xsOhh/mg==',
+              'salt' => '9d2nmpfn4cg0ok80cok04884w4oc8so',
+              'roles' => 'ROLE_ADMIN,ROLE_ALLOWED_TO_SWITCH,ROLE_USER',
+              'name' => 'Admin',
+              'time_created' => time(),
+              'username' => 'Admin',
+              'isEnabled' => '1',
+            ));
+        }
+
     }
 
     // ----- UserProviderInterface -----
